@@ -43,3 +43,4 @@ target_link_libraries(matrix_lars PRIVATE ${PAPI_LIB} stdc++)
 # Optionally, output some information for debugging
 message(STATUS "PAPI include directory: ${PAPI_INCLUDE_DIR}")
 message(STATUS "PAPI library: ${PAPI_LIB}")
+
