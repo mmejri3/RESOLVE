@@ -1,5 +1,4 @@
 # RESOLVE
-# RESOLVE
 
 Welcome to the repository for the paper:
 
