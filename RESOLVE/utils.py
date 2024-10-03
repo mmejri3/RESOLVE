@@ -93,10 +93,9 @@ def print_section(section_title):
     print('='*60)
     print('\n')
 
-def get_wandb_project_table(project_name, entity='mmejri', attr_cols=('group', 'name'), config_cols='all', summary_cols='all'):
+def get_wandb_project_table(project_name, entity='put_your_account_name', attr_cols=('group', 'name'), config_cols='all', summary_cols='all'):
     import wandb
     import pandas as pd
-    print('++++++++++++++++++++++++++++++')
 
     api = wandb.Api()
 
@@ -128,7 +127,7 @@ def get_wandb_project_table(project_name, entity='mmejri', attr_cols=('group', '
 
     return runs_df
 
-def get_project_run_histories(project_name, entity='mmejri', attr_cols=('group', 'name'), config_cols='all'):
+def get_project_run_histories(project_name, entity='put_your_account_name', attr_cols=('group', 'name'), config_cols='all'):
     '''gets the log history of all runs in a project'''
 
     import wandb
