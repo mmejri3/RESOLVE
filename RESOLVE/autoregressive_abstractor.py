@@ -5,24 +5,8 @@ from transformer_modules import Encoder, AddPositionalEmbedding
 from multi_attention_decoder import MultiAttentionDecoder
 from abstractor import Abstractor
 from abstracters import RelationalAbstracter, SymbolicAbstracter
-<<<<<<< HEAD
 
 from tensorflow.keras import regularizers
-=======
-from seq2seq_abstracter_models import HDSymoblicAttention
-from tensorflow.keras import regularizers
-import tensorflow as tf
-from tensorflow.keras.layers import Embedding, LSTM, Dense, Bidirectional
-from tensorflow.keras import Model
-import numpy as np
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers
-from tensorflow.keras.initializers import RandomNormal
-
-
-
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
 
 class AutoregressiveAbstractor(tf.keras.Model):
     """
@@ -225,7 +209,6 @@ class AutoregressiveAbstractor(tf.keras.Model):
 
 
 
-<<<<<<< HEAD
 
 
 
@@ -245,8 +228,6 @@ class AutoregressiveAbstractor(tf.keras.Model):
 
 
 
-=======
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
 class AutoregressiveTransformer(tf.keras.Model):
     """
     An implementation of an Abstractor-based Transformer module.
@@ -425,7 +406,6 @@ class AutoregressiveTransformer(tf.keras.Model):
 
 
 
-<<<<<<< HEAD
 import tensorflow as tf
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Bidirectional
 from tensorflow.keras import Model
@@ -433,8 +413,6 @@ import numpy as np
 
 
 
-=======
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
 class Encoder_LSTM(Model):
     def __init__(self, vocab_size, embedding_dim, enc_units):
         super(Encoder_LSTM, self).__init__()
@@ -624,7 +602,6 @@ class AutoregressiveAttentionalLSTM(tf.keras.Model):
         
 
 
-<<<<<<< HEAD
 
 '''class AutoregressiveHDFormer(tf.keras.Model):
     """
@@ -895,8 +872,6 @@ def create_positional_encoding(length, depth):
 
     return tf.cast(pos_encoding, dtype=tf.float32)
 
-=======
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
 class BipolarDense(layers.Layer):
     def __init__(self, units, activation=None, **kwargs):
         super(BipolarDense, self).__init__(**kwargs)
@@ -911,7 +886,6 @@ class BipolarDense(layers.Layer):
                                  trainable=True)
 
     def call(self, inputs, training=False):
-<<<<<<< HEAD
         weights = self.w
         output = tf.matmul(inputs, weights) 
         return output
@@ -937,18 +911,11 @@ class AddPositionalEmbedding2(tf.keras.layers.Layer):
 
         return x
 
-=======
-        weights = tf.math.sign(self.w)
-        output = tf.matmul(inputs, weights) 
-        return output
-    
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
 
 
 class AnotherSmallConvNet(tf.keras.Model):
     def __init__(self):
         super(AnotherSmallConvNet, self).__init__()
-<<<<<<< HEAD
         self.conv1 = layers.Conv1D(filters=1024, kernel_size=1,padding='same')
         self.dropout = layers.Dropout(0.3)
         self.ln = layers.LayerNormalization()
@@ -956,23 +923,11 @@ class AnotherSmallConvNet(tf.keras.Model):
         x = self.conv1(x)  
         x = self.ln(x)
         x = tf.nn.selu(x)
-=======
-        self.conv1 = BipolarDense(1024)
-        self.dropout = layers.Dropout(0.3)
-        self.ln = layers.LayerNormalization()
-    def call(self, x):
-        #x = tf.expand_dims(x, axis=2)
-        x = self.conv1(x)  
-        #x = tf.squeeze(x, axis=2)
-        x = self.ln(x)
-        x = tf.nn.silu(x)
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         x = self.dropout(x, training=True)
         return x
         
 
 
-<<<<<<< HEAD
 class SmallConvNet(tf.keras.Model):
     def __init__(self):
         super(SmallConvNet, self).__init__()
@@ -998,71 +953,6 @@ class SmallConvNet(tf.keras.Model):
 
         
         
-=======
-class ConvLayerWithLearnableH(tf.keras.layers.Layer):
-    def __init__(self, S, h_size):
-        super(ConvLayerWithLearnableH, self).__init__()
-        # Initialize h as a trainable variable
-        self.h = self.add_weight(shape=(S,h_size), initializer='random_normal', trainable=True)
-        self.h_s = h_size
-    def call(self, x_batch):
-        S = tf.shape(x_batch)[1]
-        def convolve_step(i):
-            # Flip the impulse response h[n] for proper convolution
-            #h_flipped = tf.reverse(self.h[i,:], axis=[0])
-            h_flipped = self.h[i,:]
-            # Pad each signal in the batch to allow for full convolution
-            padded_x_batch = tf.pad(x_batch[:, i, :], [[0, 0], [self.h_s-1, self.h_s-1]])
-
-            # Reshape both signals for 1D convolution
-            x_batch_reshaped = tf.reshape(padded_x_batch, [tf.shape(padded_x_batch)[0], -1, 1])  # Shape: (batch_size, signal_length, 1)
-            h_reshaped = tf.reshape(h_flipped, [-1, 1, 1])  # Reshape filter (kernel) after flipping
-
-            # Perform 1D convolution using VALID padding for each signal in the batch
-            y_batch = tf.nn.conv1d(x_batch_reshaped, h_reshaped, stride=1, padding='VALID')
-
-            # Reshape the result back to 2D (batch_size, output_length)
-            return tf.squeeze(y_batch)
-
-        # Use tf.map_fn to apply the convolution step over the sequence dimension
-        output = tf.map_fn(convolve_step, tf.range(S), dtype=tf.float32)
-
-        # Transpose the output tensor to ensure the correct shape (batch_size, S, output_length)
-        output = tf.transpose(output, perm=[1, 0, 2])
-
-        return output
-
-
-
-
-class SmallConvNet(tf.keras.Model):
-    def __init__(self):
-        super(SmallConvNet, self).__init__()
-        #self.encoder = ConvLayerWithLearnableH(S = 160, h_size=1024-128+1)
-        self.conv1 = layers.Conv1D(filters=128, kernel_size=5, strides=3, padding='same')
-        self.conv2 = layers.Conv1D(filters=1024, kernel_size=3, strides=5, padding='same')
-
-        self.dropout = layers.Dropout(0.4)
-        self.ln1 = layers.LayerNormalization()
-        self.ln2 = layers.LayerNormalization()
-
-    def call(self, x):
-        x = self.conv1(x)
-        x = self.ln1(x)
-        x = tf.nn.silu(x)
-
-        x = self.conv2(x)
-        x = self.ln2(x)
-        x = tf.nn.silu(x)
-        
-        #x = self.encoder(x)
-        #x = self.ln1(x)
-        #x = tf.nn.silu(x)     
-        x = self.dropout(x, training=True)
-        return x
-
-
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
 class HDSymbolicAttention(layers.Layer):
     def __init__(self, d_model, dim, seq_len_s, embd_size, symbolic, name="hd_symbolic_attention", **kwargs):
         super(HDSymbolicAttention, self).__init__(name=name, **kwargs)
@@ -1072,10 +962,7 @@ class HDSymbolicAttention(layers.Layer):
         self.embd_size = embd_size
         self.symbolic = symbolic
         self.process = SmallConvNet()
-<<<<<<< HEAD
         self.pos_embedding_adder_input_s = AddPositionalEmbedding2(name='add_pos_embedding_symbols')
-=======
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         
     def cosine_similarity(self, a, b):
         dot_product = tf.reduce_mean(tf.math.sign(a) * tf.math.sign(b), axis=-1) 
@@ -1105,23 +992,13 @@ class HDSymbolicAttention(layers.Layer):
         else:
             scores = self.create_cosine_similarity_matrix(values_projected,values_projected) 
         attention_output = tf.matmul(scores,values_projected)
-<<<<<<< HEAD
         O = tf.nn.selu(symbol_projected*attention_output)
-=======
-        O = tf.nn.silu(attention_output*symbol_projected)
-        V = attention_output
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         return O, values_projected
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0][0], input_shape[0][1], self.d_model)
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         
 class Binding(tf.keras.Model):
     def __init__(self,
@@ -1150,13 +1027,9 @@ class Binding(tf.keras.Model):
         source, target = inputs
         source = self.source_embedder(source)
         source = self.pos_embedding_adder_input(source)
-<<<<<<< HEAD
         #source = self.encoder(source)
         source = self.dropout(source, training=True)
 
-=======
-        source = self.encoder(source)
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         
         target_hd = self.target_embedder(target)
         target_hd = self.pos_embedding_adder_target(target_hd)
@@ -1191,14 +1064,8 @@ class AutoregressiveHDFormer(tf.keras.Model):
         self.mha = HDSymbolicAttention(VSA_dim, input_vocab, seq_len_s, embedding_dim, symbolic, name='multi_head_attention') 
         self.final_layer = layers.Dense(target_vocab, name='final_layer') 
         self.bn1 = layers.BatchNormalization(name='batch_norm1') 
-<<<<<<< HEAD
         self.dropout = layers.Dropout(dropout_rate, name='dropout')
         self.add = layers.Add(name='add_layer')
-=======
-        self.dropout = [layers.Dropout(dropout_rate, name='dropout') for _ in range(10)]
-        self.add = layers.Add(name='add_layer')
-        self.layernorm = [[layers.LayerNormalization(name=f'layer_norm_{i}') for i in range(3)] for _ in range(3)]     
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         self.word_to_id = word_to_id 
         self.symbolic = symbolic
         mask_token = self.word_to_id('[UNK]')
@@ -1212,11 +1079,7 @@ class AutoregressiveHDFormer(tf.keras.Model):
         source, h_t= self.bnd(inputs)    
         h_a,source_hd_e  = self.mha(source)  # Abstract_output
         source_hd_e = self.bn1(source_hd_e)
-<<<<<<< HEAD
         encoder_context = self.dropout(source_hd_e)  # Encoder_output 
-=======
-        encoder_context = self.dropout[2](source_hd_e)  # Encoder_output 
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         return h_t, encoder_context, h_a
 
 
@@ -1226,10 +1089,6 @@ class AutoregressiveHDFormer(tf.keras.Model):
         h_e_d = self.down(h_e)
         h_a_d = self.down(h_a)  
         decoder_inputs = [h_t_d, h_e_d, h_a_d]
-<<<<<<< HEAD
-=======
-        #decoder_inputs = [h_t, h_e_d, h_a_d]
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
         x = self.decoder(decoder_inputs)        
         logits = self.final_layer(x)
         return logits                                
@@ -1280,7 +1139,3 @@ class AutoregressiveHDFormer(tf.keras.Model):
 
           
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
