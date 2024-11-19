@@ -457,4 +457,7 @@ model_creator_dict = dict(
     attentional_lstm=create_attentionLSTM
     )
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b99bceb5b9fe9b94ff47fe8ffbf37580e586a9e3
